@@ -1,0 +1,97 @@
+{{ template "header" . }}
+
+<div class="min-h-screen bg-slate-50 py-12 px-4 font-sans">
+    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <div class="md:col-span-1">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">Ringkasan Pesanan</h3>
+                
+                <div class="rounded-xl overflow-hidden mb-4 h-40">
+                    <img src="https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover">
+                </div>
+                
+                <h4 class="font-bold text-xl text-slate-800">{{ .dest_name }}</h4>
+                <div class="flex items-center text-slate-500 text-sm mt-1 mb-4">
+                    <i class="fas fa-map-marker-alt mr-2 text-red-500"></i> Wisata Alam
+                </div>
+                
+                <div class="border-t border-dashed border-slate-200 my-4"></div>
+                
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-slate-500">Harga Tiket</span>
+                    <span class="font-semibold text-slate-700">Rp {{ .price }}</span>
+                </div>
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-slate-500">Jumlah</span>
+                    <span class="font-semibold text-slate-700">1 Orang</span>
+                </div>
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-slate-500">Biaya Layanan</span>
+                    <span class="font-semibold text-green-600">Gratis</span>
+                </div>
+                
+                <div class="border-t border-slate-200 my-4 pt-4 flex justify-between items-center">
+                    <span class="font-bold text-slate-800">Total Bayar</span>
+                    <span class="font-bold text-2xl text-blue-600">Rp {{ .price }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:col-span-2">
+            <form action="/process-payment" method="POST" class="bg-white rounded-3xl shadow-lg border border-slate-100 p-8">
+                <h3 class="text-xl font-bold text-slate-800 mb-6">Pilih Metode Pembayaran</h3>
+
+                <input type="hidden" name="destination_id" value="{{ .dest_id }}">
+                <input type="hidden" name="price" value="{{ .price }}">
+
+                <label class="block relative mb-4 cursor-pointer">
+                    <input type="radio" name="payment_method" value="qris" class="peer sr-only" checked>
+                    <div class="p-4 rounded-xl border-2 border-slate-200 peer-checked:border-blue-600 peer-checked:bg-blue-50 transition flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center border border-slate-100">
+                                <i class="fas fa-qrcode text-2xl text-slate-800"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-700">QRIS (GoPay, OVO, Dana)</h4>
+                                <p class="text-xs text-slate-500">Scan code instan</p>
+                            </div>
+                        </div>
+                        <div class="w-6 h-6 rounded-full border-2 border-slate-300 peer-checked:border-blue-600 peer-checked:bg-blue-600 flex items-center justify-center">
+                            <i class="fas fa-check text-white text-xs opacity-0 peer-checked:opacity-100"></i>
+                        </div>
+                    </div>
+                </label>
+
+                <label class="block relative mb-8 cursor-pointer">
+                    <input type="radio" name="payment_method" value="bank" class="peer sr-only">
+                    <div class="p-4 rounded-xl border-2 border-slate-200 peer-checked:border-blue-600 peer-checked:bg-blue-50 transition flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center border border-slate-100">
+                                <i class="fas fa-university text-2xl text-slate-800"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-700">Transfer Bank (BCA, Mandiri)</h4>
+                                <p class="text-xs text-slate-500">Verifikasi otomatis</p>
+                            </div>
+                        </div>
+                        <div class="w-6 h-6 rounded-full border-2 border-slate-300 peer-checked:border-blue-600 peer-checked:bg-blue-600 flex items-center justify-center">
+                            <i class="fas fa-check text-white text-xs opacity-0 peer-checked:opacity-100"></i>
+                        </div>
+                    </div>
+                </label>
+
+                <button type="submit" class="w-full py-4 bg-slate-900 text-white font-bold rounded-xl hover:bg-blue-600 transition shadow-lg shadow-blue-500/20 transform hover:-translate-y-1">
+                    Bayar Sekarang <i class="fas fa-lock ml-2"></i>
+                </button>
+                
+                <p class="text-center text-xs text-slate-400 mt-4">
+                    <i class="fas fa-shield-alt mr-1"></i> Pembayaran Anda dijamin aman.
+                </p>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+{{ template "footer" . }}

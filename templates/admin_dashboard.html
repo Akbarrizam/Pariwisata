@@ -1,0 +1,401 @@
+{{ template "header" . }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" type="text/css">
+<script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" type="text/javascript"></script>
+
+<style>
+    .datatable-input { border-radius: 0.5rem; border: 1px solid #e2e8f0; padding: 0.5rem; outline: none; }
+    .datatable-selector { border-radius: 0.5rem; border: 1px solid #e2e8f0; padding: 0.3rem; margin-left: 0.5rem; }
+    .datatable-pagination li a { border-radius: 0.5rem; margin: 0 2px; text-decoration: none; }
+    .datatable-pagination li.active a { background-color: #4f46e5; color: white; }
+</style>
+
+<div class="flex min-h-screen relative overflow-hidden">
+    
+    <div class="absolute -top-20 -left-20 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+    <div class="absolute top-40 -right-20 w-96 h-96 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+
+    <aside class="w-72 glass-sidebar text-white fixed h-full z-50 hidden lg:block shadow-2xl transition-all duration-300">
+        <div class="p-8 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                <i class="fas fa-globe text-white text-lg"></i>
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight">Admin<span class="text-indigo-400">Go</span></h1>
+        </div>
+        
+        <nav class="mt-8 px-4 space-y-2">
+            <a href="/admin/dashboard" class="flex items-center gap-4 px-4 py-3 bg-white/10 rounded-xl text-white font-medium backdrop-blur-sm border border-white/10 transition-all hover:scale-105">
+                <i class="fas fa-chart-pie text-indigo-400"></i> Dashboard
+            </a>
+            
+            <a href="/admin/scanner" class="flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                <i class="fas fa-qrcode text-cyan-400"></i> Scan Tiket
+            </a>
+
+            <a href="/" target="_blank" class="flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                <i class="fas fa-external-link-alt"></i> Lihat Website
+            </a>
+            <a href="/logout" class="flex items-center gap-4 px-4 py-3 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all mt-10">
+                <i class="fas fa-power-off"></i> Logout
+            </a>
+        </nav>
+
+        <div class="absolute bottom-8 left-0 w-full px-8">
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 shadow-lg">
+                <p class="text-xs text-indigo-200 mb-1">Status Server</p>
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+                    <span class="text-sm font-bold">Online & Aman</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 lg:ml-72 p-8 relative z-10">
+        
+        <header class="flex justify-between items-center mb-10 animate-up">
+            <div>
+                <h2 class="text-3xl font-bold text-slate-800">Dashboard Overview 👋</h2>
+                <p class="text-slate-500 mt-1">Pantau performa bisnis dan data pariwisata.</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center text-slate-600 cursor-pointer hover:bg-slate-50 transition">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <img src="https://ui-avatars.com/api/?name=Admin&background=0f172a&color=fff" class="w-12 h-12 rounded-full shadow-md border-2 border-white">
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="p-6 rounded-3xl bg-white border border-slate-100 shadow-sm animate-up delay-100 flex items-center gap-4 hover:shadow-md transition">
+                <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl">
+                    <i class="fas fa-map-location-dot"></i>
+                </div>
+                <div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Destinasi</p>
+                    <h3 class="text-2xl font-bold text-slate-800">{{ len .destinations }}</h3>
+                </div>
+            </div>
+
+            <div class="p-6 rounded-3xl bg-white border border-slate-100 shadow-sm animate-up delay-200 flex items-center gap-4 hover:shadow-md transition">
+                <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Member</p>
+                    <h3 class="text-2xl font-bold text-slate-800">{{ len .members }}</h3>
+                </div>
+            </div>
+
+            <div class="p-6 rounded-3xl bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-lg shadow-orange-500/30 animate-up delay-300 flex items-center gap-4 transform hover:-translate-y-1 transition duration-300">
+                <div class="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div>
+                    <p class="text-orange-50 text-xs font-bold uppercase tracking-wider">Pendapatan</p>
+                    <h3 class="text-2xl font-bold">Rp {{ printf "%.0f" .totalRevenue }}</h3>
+                </div>
+            </div>
+
+            <div class="p-6 rounded-3xl bg-white border border-slate-100 shadow-sm animate-up delay-300 flex items-center gap-4 hover:shadow-md transition">
+                <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl">
+                    <i class="fas fa-tags"></i>
+                </div>
+                <div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Kategori</p>
+                    <h3 class="text-2xl font-bold text-slate-800">{{ len .categories }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 mb-8 animate-up delay-300 relative overflow-hidden">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800">Statistik Pengunjung</h3>
+                    <p class="text-sm text-slate-500">Trend kunjungan member tahun 2025</p>
+                </div>
+            </div>
+            <div class="relative h-80 w-full">
+                <canvas id="visitorChart"></canvas>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 animate-up delay-300">
+            
+            <div class="xl:col-span-1">
+                <div class="glass-panel p-6 rounded-3xl shadow-sm border border-slate-100 h-full bg-white">
+                    <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2 border-b pb-4">
+                        <span class="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600"><i class="fas fa-plus"></i></span>
+                        Tambah Wisata
+                    </h3>
+                    
+                    <form method="POST" action="/admin/destination" enctype="multipart/form-data" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nama Wisata</label>
+                            <input type="text" name="name" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50" placeholder="Contoh: Pantai Kuta" required>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Kategori</label>
+                            <select name="category_id" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-indigo-500 transition-all">
+                                {{ range .categories }}
+                                    <option value="{{ .ID }}">{{ .Name }}</option>
+                                {{ end }}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nama Lokasi (Kota)</label>
+                            <input type="text" name="location" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50" placeholder="Contoh: Badung, Bali">
+                        </div>
+
+                        <div class="col-span-2">
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Titik Lokasi Peta (Klik Peta)</label>
+                            <div id="mapPicker" class="w-full h-64 rounded-xl border-2 border-slate-100 z-0"></div>
+                            <p class="text-xs text-slate-400 mt-1">*Klik peta untuk isi koordinat otomatis.</p>
+                            
+                            <div class="grid grid-cols-2 gap-4 mt-2">
+                                <input type="text" id="latInput" name="latitude" class="bg-slate-100 text-xs p-2 rounded text-slate-500" placeholder="Latitude" readonly>
+                                <input type="text" id="lngInput" name="longitude" class="bg-slate-100 text-xs p-2 rounded text-slate-500" placeholder="Longitude" readonly>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Harga Tiket</label>
+                            <input type="number" name="price" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-indigo-500 bg-slate-50" placeholder="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Deskripsi</label>
+                            <textarea name="description" rows="3" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-indigo-500 bg-slate-50"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Foto Galeri (Bisa Pilih Banyak)</label>
+    
+                            <div class="relative border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:bg-slate-50 transition cursor-pointer group">
+                                <input type="file" name="images" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Pilih foto" required>
+        
+                                <div class="space-y-2">             
+                                    <i class="fas fa-cloud-upload-alt text-3xl text-slate-400 group-hover:text-indigo-500 transition"></i>
+                                    <p class="text-sm text-slate-500 font-medium">Klik untuk upload (Maks 5 Foto)</p>
+                                    <p class="text-xs text-slate-400">JPG, PNG support</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-4 bg-slate-900 text-white rounded-xl font-bold shadow-lg shadow-slate-900/20 hover:bg-indigo-600 hover:shadow-indigo-600/30 transition-all transform hover:-translate-y-1">
+                            Simpan Data
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="xl:col-span-2 space-y-8">
+                
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+                        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <span class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600"><i class="fas fa-list"></i></span>
+                            Data Wisata
+                        </h3>
+                        
+                        <select id="categoryFilter" class="mt-2 md:mt-0 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer">
+                            <option value="">Semua Kategori</option>
+                            <option value="Pantai">Pantai</option>
+                            <option value="Gunung">Gunung</option>
+                            <option value="Kuliner">Kuliner</option>
+                        </select>
+                    </div>
+
+                    <div class="overflow-hidden">
+                        <table id="destTable" class="w-full text-left border-collapse">
+                            <thead class="bg-slate-50 text-xs font-bold text-slate-400 uppercase">
+                                <tr>
+                                    <th>Info Wisata</th>
+                                    <th>Kategori</th>
+                                    <th>Harga</th>
+                                    <th class="text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm">
+                                {{ range .destinations }}
+                                <tr class="hover:bg-slate-50 transition-colors border-b border-slate-50">
+                                    <td class="p-4">
+                                        <div class="font-bold text-slate-800">{{ .Name }}</div>
+                                        <div class="text-xs text-slate-500"><i class="fas fa-map-marker-alt mr-1"></i> {{ .Location }}</div>
+                                    </td>
+                                    <td class="p-4">
+                                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-600">{{ .Category.Name }}</span>
+                                    </td>
+                                    <td class="p-4 font-mono font-medium text-slate-600">Rp {{ .Price }}</td>
+                                    <td class="p-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <button class="text-slate-300 hover:text-indigo-500 transition"><i class="fas fa-edit"></i></button>
+                                            <button class="text-slate-300 hover:text-red-500 transition"><i class="fas fa-trash-alt"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {{ end }}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                    <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600"><i class="fas fa-history"></i></span>
+                        Riwayat Transaksi & Scan
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 text-xs font-bold text-slate-400 uppercase">
+                                <tr>
+                                    <th class="p-4">Kode Tiket</th>
+                                    <th class="p-4">Pengunjung</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4">Waktu</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm">
+                                {{ range .transactions }}
+                                <tr class="hover:bg-slate-50 transition border-b border-slate-50">
+                                    <td class="p-4 font-mono font-bold text-slate-600">{{ .BookingCode }}</td>
+                                    <td class="p-4">{{ .User.FullName }}</td>
+                                    <td class="p-4">
+                                        {{ if eq .Status "used" }}
+                                            <span class="px-2 py-1 bg-slate-200 text-slate-600 text-xs font-bold rounded-full">SUDAH MASUK</span>
+                                        {{ else }}
+                                            <span class="px-2 py-1 bg-green-100 text-green-600 text-xs font-bold rounded-full">LUNAS</span>
+                                        {{ end }}
+                                    </td>
+                                    <td class="p-4 text-slate-400 text-xs">{{ .UpdatedAt.Format "02 Jan 15:04" }}</td>
+                                </tr>
+                                {{ else }}
+                                <tr><td colspan="4" class="p-6 text-center text-slate-400">Belum ada transaksi.</td></tr>
+                                {{ end }}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                    <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600"><i class="fas fa-users"></i></span>
+                        Member Terdaftar
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 text-xs font-bold text-slate-400 uppercase">
+                                <tr>
+                                    <th class="p-4">Nama</th>
+                                    <th class="p-4">Username</th>
+                                    <th class="p-4">Bergabung</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm">
+                                {{ range .members }}
+                                <tr class="hover:bg-slate-50 transition border-b border-slate-50">
+                                    <td class="p-4 font-bold text-slate-800">{{ .FullName }}</td>
+                                    <td class="p-4 text-blue-500">@{{ .Username }}</td>
+                                    <td class="p-4 text-slate-500">{{ .CreatedAt.Format "02 Jan 2006" }}</td>
+                                </tr>
+                                {{ else }}
+                                <tr><td colspan="3" class="p-6 text-center text-slate-400">Belum ada member.</td></tr>
+                                {{ end }}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        
+        // 1. CONFIG CHART PENGUNJUNG
+        const ctx = document.getElementById('visitorChart').getContext('2d');
+        const visitorData = {{ .visitorStats }}; 
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
+        gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                datasets: [{
+                    label: 'Pengunjung',
+                    data: visitorData,
+                    borderColor: '#4f46e5',
+                    backgroundColor: gradient,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#4f46e5',
+                    pointRadius: 5,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 2. CONFIG MAP PICKER (LEAFLET)
+        var map = L.map('mapPicker').setView([-2.5489, 118.0149], 5); // Default Indonesia
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        var marker;
+        map.on('click', function(e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+
+            if (marker) {
+                marker.setLatLng(e.latlng);
+            } else {
+                marker = L.marker(e.latlng).addTo(map);
+            }
+            document.getElementById('latInput').value = lat;
+            document.getElementById('lngInput').value = lng;
+        });
+
+        // 3. CONFIG TABEL CANGGIH (SIMPLE-DATATABLES)
+        const dataTable = new simpleDatatables.DataTable("#destTable", {
+            searchable: true,
+            fixedHeight: false,
+            perPage: 5,
+            perPageSelect: [5, 10, 20],
+            labels: {
+                placeholder: "Cari wisata...",
+                perPage: "Data per halaman",
+                noRows: "Tidak ada data ditemukan",
+                info: "Menampilkan {start} - {end} dari {rows}",
+            }
+        });
+
+        // Logic Filter Kategori Dropdown
+        const categoryFilter = document.getElementById('categoryFilter');
+        if(categoryFilter) {
+            categoryFilter.addEventListener('change', function(e) {
+                const value = e.target.value;
+                dataTable.search(value);
+            });
+        }
+
+    });
+</script>
+
+{{ template "footer" . }}

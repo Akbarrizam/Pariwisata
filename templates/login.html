@@ -1,0 +1,61 @@
+{{ template "header" . }}
+
+<div class="min-h-screen flex items-center justify-center bg-slate-900 relative overflow-hidden font-sans">
+    
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-600 rounded-full mix-blend-screen filter blur-[100px] opacity-20 animate-pulse"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-600 rounded-full mix-blend-screen filter blur-[100px] opacity-20 animate-pulse" style="animation-delay: 2s;"></div>
+    </div>
+
+    <div class="relative z-10 w-full max-w-md p-8 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl animate-up">
+        
+        <div class="text-center mb-10">
+            <div class="w-20 h-20 mx-auto bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 mb-4 transform rotate-3 hover:rotate-6 transition-transform">
+                <i class="fas fa-fingerprint text-4xl text-white"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-white tracking-tight">Admin Portal</h2>
+            <p class="text-slate-400 text-sm mt-2">Silakan masuk untuk mengelola sistem</p>
+        </div>
+
+        {{ if .error }}
+        <div class="flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl mb-6 text-sm animate-pulse">
+            <i class="fas fa-circle-exclamation"></i>
+            <span>{{ .error }}</span>
+        </div>
+        {{ end }}
+
+        <form method="POST" action="/login" class="space-y-5">
+            <div>
+                <label class="block text-xs font-bold text-indigo-300 uppercase mb-2 tracking-wider ml-1">Username</label>
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fas fa-user text-slate-500 group-focus-within:text-indigo-400 transition-colors"></i>
+                    </div>
+                    <input type="text" name="username" class="w-full pl-11 pr-4 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner" placeholder="Masukkan username" required>
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-xs font-bold text-indigo-300 uppercase mb-2 tracking-wider ml-1">Password</label>
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fas fa-lock text-slate-500 group-focus-within:text-indigo-400 transition-colors"></i>
+                    </div>
+                    <input type="password" name="password" class="w-full pl-11 pr-4 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full py-4 mt-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300">
+                Masuk Dashboard <i class="fas fa-arrow-right ml-2 opacity-70"></i>
+            </button>
+        </form>
+
+        <div class="mt-8 text-center border-t border-white/5 pt-6">
+            <p class="text-xs text-slate-500">
+                &copy; 2025 Pariwisata Go Project. Secure Access.
+            </p>
+        </div>
+    </div>
+</div>
+
+{{ template "footer" . }}

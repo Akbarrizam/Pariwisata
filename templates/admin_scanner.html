@@ -1,0 +1,85 @@
+{{ template "header" . }}
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+<div class="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <div class="bg-indigo-600 p-6 text-white text-center">
+            <h2 class="text-xl font-bold">Scanner Tiket</h2>
+            <p class="text-indigo-200 text-sm">Arahkan kamera ke QR Code Tiket</p>
+        </div>
+
+        <div class="p-6">
+            <div id="reader" class="w-full rounded-xl overflow-hidden border-2 border-slate-200 mb-6"></div>
+
+            <div id="resultArea" class="hidden text-center p-4 rounded-xl bg-slate-100 mb-4">
+                <div id="statusIcon" class="text-4xl mb-2"></div>
+                <h3 id="resultTitle" class="font-bold text-lg"></h3>
+                <p id="resultMsg" class="text-sm text-slate-600"></p>
+            </div>
+
+            <a href="/admin/dashboard" class="block w-full py-3 bg-slate-800 text-white text-center rounded-xl font-bold hover:bg-slate-700">
+                Kembali ke Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const resultArea = document.getElementById('resultArea');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultMsg = document.getElementById('resultMsg');
+    const statusIcon = document.getElementById('statusIcon');
+    let isScanning = true;
+
+    function onScanSuccess(decodedText, decodedResult) {
+        if (!isScanning) return; // Mencegah double scan cepat
+        
+        isScanning = false; 
+        
+        // Kirim Kode ke Backend untuk Validasi
+        const formData = new FormData();
+        formData.append("code", decodedText);
+
+        fetch('/admin/validate-ticket', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            resultArea.classList.remove('hidden');
+            
+            if (data.status === 'success') {
+                // TIKET VALID
+                resultArea.className = "text-center p-4 rounded-xl bg-green-100 mb-4 border border-green-200";
+                statusIcon.innerHTML = "✅";
+                resultTitle.innerText = "TIKET VALID";
+                resultMsg.innerHTML = `Selamat Datang, <b>${data.data.visitor}</b><br>Tujuan: ${data.data.dest}`;
+                
+                // Audio Sukses (Opsional)
+                // new Audio('success.mp3').play();
+            } else {
+                // TIKET INVALID / SUDAH DIPAKAI
+                resultArea.className = "text-center p-4 rounded-xl bg-red-100 mb-4 border border-red-200";
+                statusIcon.innerHTML = "❌";
+                resultTitle.innerText = "GAGAL";
+                resultMsg.innerText = data.message;
+            }
+
+            // Tunggu 3 detik sebelum scan lagi
+            setTimeout(() => {
+                isScanning = true;
+                resultArea.classList.add('hidden');
+            }, 3000);
+        })
+        .catch(err => {
+            alert("Error koneksi server");
+            isScanning = true;
+        });
+    }
+
+    // Jalankan Scanner
+    const html5QrcodeScanner = new Html5QrcodeScanner(
+        "reader", { fps: 10, qrbox: 250 });
+    html5QrcodeScanner.render(onScanSuccess);
+</script>
+{{ template "footer" . }}

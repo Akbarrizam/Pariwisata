@@ -1,0 +1,155 @@
+{{ template "header" . }}
+
+<nav class="fixed w-full z-50 px-6 py-4 flex justify-between items-center transition-all bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-100">
+    <a href="/" class="font-bold text-2xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+        GoWisata.
+    </a>
+    <div class="flex items-center gap-4">
+        <span class="text-sm font-semibold text-slate-600 hidden md:block">Halo, {{ .user.FullName }}</span>
+        <img src="..." class="...">
+    
+        <a href="/logout-member" class="text-slate-400 hover:text-red-500 transition" title="Keluar">
+        <i class="fas fa-sign-out-alt"></i></a>
+    </div>
+</nav>
+
+<div class="min-h-screen bg-slate-50 pt-24 pb-10 px-4 md:px-8">
+    
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 sticky top-28">
+                <div class="text-center mb-6">
+                    <div class="relative w-24 h-24 mx-auto mb-4">
+                        <img src="https://ui-avatars.com/api/?name={{ .name }}&background=0D8ABC&color=fff&size=128" class="w-full h-full rounded-full border-4 border-indigo-50 shadow-md">
+                        <button class="absolute bottom-0 right-0 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center hover:bg-indigo-700 transition border-2 border-white">
+                            <i class="fas fa-camera text-xs"></i>
+                        </button>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800">{{ .name }}</h2>
+                    <p class="text-sm text-slate-500">Wisatawan Explorer</p>
+                    <div class="mt-4 flex justify-center gap-2">
+                        <span class="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-bold rounded-full">Gold Member</span>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 bg-indigo-50 text-indigo-700 rounded-xl font-semibold transition">
+                        <i class="fas fa-user w-5 text-center"></i> Profil Saya
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-indigo-600 rounded-xl font-medium transition">
+                        <i class="fas fa-heart w-5 text-center"></i> Wishlist
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-indigo-600 rounded-xl font-medium transition">
+                        <i class="fas fa-star w-5 text-center"></i> Ulasan Saya
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-indigo-600 rounded-xl font-medium transition">
+                        <i class="fas fa-ticket-alt w-5 text-center"></i> Tiket Saya
+                    </a>
+                    <div class="border-t border-slate-100 my-2"></div>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 rounded-xl font-medium transition">
+                        <i class="fas fa-cog w-5 text-center"></i> Pengaturan
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-3 space-y-8">
+            
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 to-blue-500 text-white p-8 shadow-lg shadow-indigo-500/20">
+                <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl"></div>
+                <div class="relative z-10">
+                    <h1 class="text-3xl font-bold mb-2">Selamat Datang Kembali! 👋</h1>
+                    <p class="text-indigo-100 max-w-lg">Sudah siap untuk petualangan berikutnya? Cek rekomendasi terbaru khusus untukmu.</p>
+                    <div class="mt-6 flex gap-4">
+                        <div class="text-center">
+                            <span class="block text-2xl font-bold">12</span>
+                            <span class="text-xs text-indigo-200 uppercase">Trip Selesai</span>
+                        </div>
+                        <div class="w-px bg-white/20 h-10"></div>
+                        <div class="text-center">
+                            <span class="block text-2xl font-bold">5</span>
+                            <span class="text-xs text-indigo-200 uppercase">Review</span>
+                        </div>
+                        <div class="w-px bg-white/20 h-10"></div>
+                        <div class="text-center">
+                            <span class="block text-2xl font-bold">3</span>
+                            <span class="text-xs text-indigo-200 uppercase">Wishlist</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-slate-800">Wishlist Anda <i class="fas fa-heart text-red-500 ml-2"></i></h3>
+                    <a href="/" class="text-sm text-indigo-600 font-semibold hover:underline">Tambah lagi</a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {{ range .wishlist }}
+                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300 group overflow-hidden">
+                        <div class="relative h-40 overflow-hidden">
+                            {{ if .Galleries }}
+                                <img src="/uploads/{{ (index .Galleries 0).ImageURL }}" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                            {{ end }}
+                            <button class="absolute top-3 right-3 w-8 h-8 bg-white rounded-full text-red-500 shadow-md flex items-center justify-center hover:bg-red-50 transition">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+                        <div class="p-4">
+                            <span class="text-xs font-bold text-indigo-500 bg-indigo-50 px-2 py-1 rounded">{{ .Category.Name }}</span>
+                            <h4 class="font-bold text-slate-800 mt-2 text-lg truncate">{{ .Name }}</h4>
+                            <p class="text-slate-500 text-xs mb-3"><i class="fas fa-map-marker-alt text-red-400 mr-1"></i> {{ .Location }}</p>
+                            <a href="/destination/{{ .ID }}" class="block w-full py-2 bg-slate-800 text-white text-center rounded-lg text-sm font-bold hover:bg-indigo-600 transition">
+                                Lihat Detail
+                            </a>
+                        </div>
+                    </div>
+                    {{ end }}
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
+                <h3 class="text-xl font-bold text-slate-800 mb-6">Ulasan Terakhir Anda</h3>
+                
+                <div class="space-y-6">
+                    <div class="flex gap-4 items-start pb-6 border-b border-slate-50 last:border-0 last:pb-0">
+                        <div class="w-12 h-12 rounded-xl bg-blue-100 flex-shrink-0 flex items-center justify-center text-blue-600 text-xl">
+                            <i class="fas fa-umbrella-beach"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start">
+                                <h4 class="font-bold text-slate-800">Pantai Kuta Bali</h4>
+                                <span class="text-xs text-slate-400">2 hari yang lalu</span>
+                            </div>
+                            <div class="flex text-yellow-400 text-xs my-1">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="text-slate-600 text-sm leading-relaxed">"Pemandangannya sangat indah, tapi agak ramai saat sore hari. Sangat merekomendasikan datang pagi hari untuk sunrise!"</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-4 items-start">
+                        <div class="w-12 h-12 rounded-xl bg-green-100 flex-shrink-0 flex items-center justify-center text-green-600 text-xl">
+                            <i class="fas fa-mountain"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start">
+                                <h4 class="font-bold text-slate-800">Gunung Bromo</h4>
+                                <span class="text-xs text-slate-400">1 minggu yang lalu</span>
+                            </div>
+                            <div class="flex text-yellow-400 text-xs my-1">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                            </div>
+                            <p class="text-slate-600 text-sm leading-relaxed">"Dingin banget tapi worth it! Pastikan bawa jaket tebal ya."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{{ template "footer" . }}
