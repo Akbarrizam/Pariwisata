@@ -1,88 +1,230 @@
 {{ template "header" . }}
 
-<nav class="fixed w-full z-50 px-6 py-4 flex justify-between items-center transition-all bg-white/80 backdrop-blur-md shadow-sm">
-    <div class="font-bold text-2xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-        GoWisata.
-    </div>
-    <div class="flex items-center gap-3">
-        <a href="/user/dashboard" class="px-5 py-2 rounded-full border border-indigo-600 text-indigo-600 text-sm font-bold hover:bg-indigo-50 transition">
-            <i class="fas fa-user-circle mr-2"></i>Member Area
+<nav class="fixed w-full z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-slate-100" id="navbar">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <a href="/" class="flex items-center">
+            <img src="/uploads/logo_gowisata.png" alt="GoWisata Logo" class="h-16 w-auto object-contain">
         </a>
-    <a href="/login" class="px-6 py-2 rounded-full bg-slate-900 text-white text-sm font-bold hover:bg-indigo-600 transition shadow-lg">
-        Admin Login
-    </a>
+
+        <div class="hidden md:flex items-center gap-8">
+            <a href="#alam" class="text-slate-500 hover:text-blue-600 font-medium transition">Wisata Alam</a>
+            <a href="#kuliner" class="text-slate-500 hover:text-blue-600 font-medium transition">Kuliner</a>
+            <a href="#tentang" class="text-slate-500 hover:text-blue-600 font-medium transition">Tentang</a>
+        </div>
+
+        <div class="flex items-center gap-3">
+            {{ if .user.ID }}
+                <a href="/user/dashboard" class="px-5 py-2.5 rounded-full bg-indigo-50 text-indigo-600 font-bold hover:bg-indigo-100 transition flex items-center gap-2 border border-indigo-100">
+                    <i class="fas fa-user-circle text-lg"></i> 
+                    <span>Halo, {{ printf "%.1s" .user.FullName }}...</span>
+                </a>
+            {{ else }}
+                <a href="/login-member" class="px-6 py-2.5 rounded-full bg-slate-900 text-white font-bold hover:bg-blue-600 transition shadow-lg shadow-slate-900/20">
+                    Masuk / Daftar
+                </a>
+            {{ end }}
+        </div>
+    </div>
 </nav>
 
-<div class="relative min-h-[600px] flex items-center justify-center text-center overflow-hidden">
+<div class="relative h-[600px] lg:h-[700px] flex items-center justify-center overflow-hidden">
+    
     <div class="absolute inset-0 z-0">
-        <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" class="w-full h-full object-cover">
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent"></div>
+        <div class="absolute inset-0 bg-cover bg-center animate-kenburns opacity-0" 
+             style="background-image: url('https://images.unsplash.com/photo-1516690561799-46d8f74f9abf?auto=format&fit=crop&w=2000&q=80'); animation-delay: 0s;"></div>
+        
+        <div class="absolute inset-0 bg-cover bg-center animate-kenburns opacity-0" 
+             style="background-image: url('https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=2000&q=80'); animation-delay: 5s;"></div>
+
+        <div class="absolute inset-0 bg-cover bg-center animate-kenburns opacity-0" 
+             style="background-image: url('https://images.unsplash.com/photo-1588668214407-6ea9e6d8c272?auto=format&fit=crop&w=2000&q=80'); animation-delay: 10s;"></div>
+
+        <div class="absolute inset-0 bg-cover bg-center animate-kenburns opacity-0" 
+             style="background-image: url('https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=2000&q=80'); animation-delay: 15s;"></div>
     </div>
 
-    <div class="relative z-10 px-4 max-w-4xl mx-auto animate-up">
-        <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight leading-tight">
-            Jelajahi Surga <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">Indonesia</span>
+    <div class="absolute inset-0 z-10 bg-gradient-to-b from-slate-900/80 via-slate-900/50 to-white"></div>
+
+    <div class="container mx-auto px-6 relative z-20 text-center mt-10">
+        
+        <span class="px-4 py-2 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-bold uppercase tracking-wider mb-6 inline-block border border-white/30 animate-fade-in-up">
+            ✨ Wonderful Indonesia
+        </span>
+        
+        <h1 class="text-4xl lg:text-6xl font-extrabold text-white mb-6 leading-tight drop-shadow-lg animate-fade-in-up delay-100">
+            Temukan Surga Tersembunyi <br> 
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-cyan-300">
+                & Rasa Otentik Nusantara
+            </span>
         </h1>
-        <p class="text-lg text-slate-300 mb-8 max-w-2xl mx-auto">
-            Temukan destinasi impian, hidden gems, dan pengalaman tak terlupakan bersama kami.
+        
+        <p class="text-lg text-slate-200 mb-10 max-w-2xl mx-auto drop-shadow-md animate-fade-in-up delay-200">
+            Platform terlengkap informasi destinasi wisata alam memukau dan kuliner legendaris di seluruh penjuru Indonesia.
         </p>
 
-        <form action="/" method="get" class="bg-white p-2 rounded-full shadow-2xl flex max-w-xl mx-auto transform hover:scale-105 transition-transform duration-300">
-            <input type="text" name="keyword" class="flex-grow px-6 py-3 rounded-full focus:outline-none text-slate-700 placeholder-slate-400" placeholder="Cari pantai, gunung...">
-            <button type="submit" class="bg-indigo-600 text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-indigo-700 transition">
-                <i class="fas fa-search"></i>
+        <form action="/" method="GET" class="max-w-3xl mx-auto bg-white p-2 rounded-full shadow-2xl shadow-slate-900/30 border border-slate-100 flex items-center animate-fade-in-up delay-300">
+            <div class="flex-1 px-6 border-r border-slate-100">
+                <input type="text" name="keyword" placeholder="Cari pantai, gunung, atau sate..." class="w-full py-3 bg-transparent outline-none text-slate-700 placeholder-slate-400">
+            </div>
+            <div class="px-6 hidden md:block">
+                <select name="category_id" class="py-3 bg-transparent outline-none text-slate-700 font-medium cursor-pointer bg-white">
+                    <option value="">Semua Kategori</option>
+                    {{ range .categories }}
+                        <option value="{{ .ID }}">{{ .Name }}</option>
+                    {{ end }}
+                </select>
+            </div>
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-bold transition shadow-lg shadow-blue-600/30">
+                Cari
             </button>
         </form>
+        
+        <div class="mt-8 flex justify-center gap-8 text-white/80 text-sm font-semibold animate-fade-in-up delay-300">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-map-marked-alt text-yellow-400"></i> 100+ Destinasi
+            </div>
+            <div class="flex items-center gap-2">
+                <i class="fas fa-utensils text-orange-400"></i> 50+ Kuliner
+            </div>
+            <div class="flex items-center gap-2">
+                <i class="fas fa-users text-green-400"></i> 10k+ Traveler
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="max-w-7xl mx-auto px-6 py-20 bg-white">
-    <div class="flex items-end justify-between mb-10">
-        <div>
-            <h2 class="text-3xl font-bold text-slate-900">Destinasi Pilihan</h2>
-            <div class="h-1 w-24 bg-indigo-500 mt-2 rounded-full"></div>
+<section id="alam" class="py-16 bg-white">
+    <div class="container mx-auto px-6">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-12">
+            <div>
+                <h2 class="text-3xl font-bold text-slate-900 mb-2 flex items-center gap-3">
+                    <span class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center text-green-600 text-xl"><i class="fas fa-mountain"></i></span>
+                    Wisata Alam & Hiburan
+                </h2>
+                <p class="text-slate-500">Nikmati keindahan panorama alam Indonesia.</p>
+            </div>
         </div>
-        <div class="text-sm text-slate-500 font-medium">Explore More <i class="fas fa-arrow-right ml-1"></i></div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {{ range .destinations }}
-        <div class="group relative bg-white rounded-3xl shadow-lg border border-slate-100 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
-            <div class="absolute top-4 left-4 z-10">
-                <span class="px-3 py-1 bg-white/90 backdrop-blur text-xs font-bold rounded-full shadow-sm text-slate-800">
-                    {{ .Category.Name }}
-                </span>
-            </div>
-
-            <div class="h-64 overflow-hidden relative">
-                {{ if .Galleries }}
-                    <img src="/uploads/{{ (index .Galleries 0).ImageURL }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                {{ else }}
-                    <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                {{ end }}
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </div>
-
-            <div class="p-6">
-                <h3 class="text-xl font-bold text-slate-900 mb-1">{{ .Name }}</h3>
-                <p class="text-sm text-slate-500 mb-4 flex items-center">
-                    <i class="fas fa-map-marker-alt text-red-400 mr-2"></i> {{ .Location }}
-                </p>
-                <div class="flex items-center justify-between pt-4 border-t border-slate-100">
-                    <div>
-                        <span class="text-xs text-slate-400">Mulai dari</span>
-                        <div class="font-bold text-indigo-600 text-lg">Rp {{ .Price }}</div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {{ range .destinations }}
+                {{ if ne .Category.Name "Kuliner" }}
+                <a href="/destination/{{ .ID }}" class="group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                    <div class="h-48 overflow-hidden relative">
+                        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-slate-800 shadow-sm z-10">
+                            Rp {{ .Price }}
+                        </div>
+                        {{ if .Galleries }}
+                            <img src="/uploads/{{ (index .Galleries 0).ImageURL }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                        {{ else }}
+                            <div class="w-full h-full bg-slate-100 flex items-center justify-center text-slate-300"><i class="fas fa-image text-3xl"></i></div>
+                        {{ end }}
                     </div>
-                    <a href="/destination/{{ .ID }}" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-indigo-600 hover:text-white transition-colors">
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
+                    <div class="p-5">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="px-2 py-1 rounded bg-indigo-50 text-indigo-600 text-[10px] font-bold uppercase tracking-wider">{{ .Category.Name }}</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800 mb-2 truncate">{{ .Name }}</h3>
+                        <div class="flex items-center text-slate-500 text-sm">
+                            <i class="fas fa-map-marker-alt mr-2 text-red-400"></i> {{ .Location }}
+                        </div>
+                    </div>
+                </a>
+                {{ end }}
+            {{ end }}
+        </div>
+    </div>
+</section>
+
+<section id="kuliner" class="py-16 bg-slate-50 relative overflow-hidden">
+    <div class="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none" style="background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 20px 20px;"></div>
+
+    <div class="container mx-auto px-6 relative z-10">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-12">
+            <div>
+                <h2 class="text-3xl font-bold text-slate-900 mb-2 flex items-center gap-3">
+                    <span class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 text-xl"><i class="fas fa-utensils"></i></span>
+                    Kuliner Legendaris
+                </h2>
+                <p class="text-slate-500">Rekomendasi tempat makan terbaik & menu andalan.</p>
             </div>
         </div>
-        {{ else }}
-            <p class="col-span-4 text-center text-slate-400 py-10">Belum ada data destinasi.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {{ range .destinations }}
+                {{ if eq .Category.Name "Kuliner" }}
+                <a href="/destination/{{ .ID }}" class="group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-orange-200 transition-all duration-300 overflow-hidden flex flex-col">
+                    <div class="h-56 overflow-hidden relative">
+                        <div class="absolute bottom-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-bold text-white z-10 flex items-center gap-1">
+                            <i class="fas fa-clock text-orange-400"></i> {{ .OpeningHours }}
+                        </div>
+                        
+                        {{ if .Galleries }}
+                            <img src="/uploads/{{ (index .Galleries 0).ImageURL }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                        {{ else }}
+                            <div class="w-full h-full bg-slate-100 flex items-center justify-center text-slate-300"><i class="fas fa-utensils text-3xl"></i></div>
+                        {{ end }}
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-slate-800 group-hover:text-orange-600 transition">{{ .Name }}</h3>
+                            <span class="text-sm font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded">Rp {{ .Price }}</span>
+                        </div>
+                        <p class="text-sm text-slate-500 mb-4"><i class="fas fa-map-pin mr-1"></i> {{ .Location }}</p>
+                        
+                        <div class="pt-4 border-t border-dashed border-slate-200">
+                            <p class="text-xs text-slate-400 font-bold uppercase mb-1">Wajib Coba:</p>
+                            <p class="text-sm font-medium text-orange-600 truncate"><i class="fas fa-thumbs-up mr-1"></i> {{ .HighlightMenu }}</p>
+                        </div>
+                    </div>
+                </a>
+                {{ end }}
+            {{ end }}
+        </div>
+    </div>
+</section>
+
+<section class="py-20 bg-slate-900 text-white text-center relative overflow-hidden">
+    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1506461883276-594a12b11cf3?auto=format&fit=crop&w=2000&q=80')] bg-cover bg-center opacity-20"></div>
+    <div class="container mx-auto px-6 relative z-10">
+        <h2 class="text-3xl md:text-4xl font-bold mb-6">Mulai Petualangan Anda Sekarang!</h2>
+        <p class="text-slate-300 mb-8 max-w-xl mx-auto text-lg">Daftar sekarang untuk menyimpan destinasi favorit, memesan tiket, dan mendapatkan rekomendasi eksklusif.</p>
+        
+        {{ if not .user.ID }}
+        <div class="flex justify-center gap-4">
+            <a href="/register" class="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold transition shadow-lg shadow-blue-500/40">Daftar Gratis</a>
+            <a href="/login-member" class="px-8 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full font-bold transition backdrop-blur-sm">Masuk Akun</a>
+        </div>
         {{ end }}
     </div>
-</div>
+</section>
+
+<style>
+    /* Animasi Ken Burns (Zoom & Fade) */
+    @keyframes kenburns {
+        0% { opacity: 0; transform: scale(1); }
+        5% { opacity: 1; }
+        25% { opacity: 1; }
+        30% { opacity: 0; transform: scale(1.1); }
+        100% { opacity: 0; transform: scale(1.1); }
+    }
+
+    .animate-kenburns {
+        animation: kenburns 20s infinite; /* Total durasi putaran */
+    }
+
+    /* Animasi Text Muncul */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in-up {
+        animation: fadeInUp 0.8s ease-out forwards;
+        opacity: 0;
+    }
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+</style>
 
 {{ template "footer" . }}

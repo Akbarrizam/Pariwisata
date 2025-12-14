@@ -29,6 +29,9 @@ type Destination struct {
 	Latitude    float64   `json:"latitude"`
 	Longitude   float64   `json:"longitude"`
 
+	OpeningHours  string `json:"opening_hours"`  
+	HighlightMenu string `json:"highlight_menu"`
+
 	Category    Category  `json:"category"`
 	Galleries   []Gallery `json:"galleries"`
 	Reviews     []Review  `json:"reviews"`

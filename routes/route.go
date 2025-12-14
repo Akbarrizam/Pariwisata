@@ -49,14 +49,24 @@ func SetupRouter() *gin.Engine {
 	admin := r.Group("/admin")
 	admin.Use(AuthMiddleware())
 	{
+		// 1. Dashboard Utama
 		admin.GET("/dashboard", controllers.Dashboard)
-		admin.POST("/destination", controllers.CreateDestination)
-        
-        // Fitur Scanner Admin
-        admin.GET("/scanner", controllers.ShowScanner)
-        admin.POST("/validate-ticket", controllers.ApiValidateTicket)
-	}
+		
+		// 2. Create (Simpan Wisata & Kuliner Baru)
+		// Pastikan baris ini ada dan tidak error
+		admin.POST("/destination", controllers.CreateDestination) 
 
+		// 3. Fitur Scanner
+		admin.GET("/scanner", controllers.ShowScanner)
+		admin.POST("/validate-ticket", controllers.ApiValidateTicket)
+
+		// 4. Fitur Edit & Update
+		admin.GET("/destination/edit/:id", controllers.ShowEditDestination)
+		admin.POST("/destination/update/:id", controllers.UpdateDestination)
+
+		// 5. Fitur Delete
+		admin.GET("/destination/delete/:id", controllers.DeleteDestination)
+	}
 	// API Routes (JSON)
 	api := r.Group("/api/v1")
 	{

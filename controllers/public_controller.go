@@ -13,7 +13,15 @@ import (
 func Home(c *gin.Context) {
 	var destinations []models.Destination
 	var categories []models.Category
+	var user models.User // Variabel untuk menampung data user
 
+	// 1. LOGIKA BARU: Cek apakah user sedang login?
+	if cookie, err := c.Cookie("member_id"); err == nil {
+		// Jika ada cookie, cari datanya di database
+		config.DB.First(&user, cookie)
+	}
+
+	// 2. Logika Search & Filter (Tetap sama seperti sebelumnya)
 	keyword := c.Query("keyword")
 	catId := c.Query("category_id")
 
@@ -29,9 +37,11 @@ func Home(c *gin.Context) {
 	query.Find(&destinations)
 	config.DB.Find(&categories)
 
+	// 3. Kirim data "user" ke HTML
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"destinations": destinations,
 		"categories":   categories,
+		"user":         user, // <--- INI PENTING: Data user dikirim ke sini
 	})
 }
 
@@ -141,20 +151,33 @@ func MemberLogout(c *gin.Context) {
 
 // --- DASHBOARD USER ---
 func UserDashboard(c *gin.Context) {
-	cookie, err := c.Cookie("member_id")
+	// 1. Ambil User dari Cookie
+	userIDStr, err := c.Cookie("member_id")
 	if err != nil {
 		c.Redirect(http.StatusFound, "/login-member")
 		return
 	}
 
 	var user models.User
-	config.DB.First(&user, cookie)
+	if err := config.DB.First(&user, userIDStr).Error; err != nil {
+		c.SetCookie("member_id", "", -1, "/", "localhost", false, true)
+		c.Redirect(http.StatusFound, "/login-member")
+		return
+	}
 
-	var wishlist []models.Destination
-	config.DB.Preload("Category").Preload("Galleries").Limit(3).Find(&wishlist)
+	// 2. Ambil Tiket Aktif
+	var tickets []models.Transaction
+	config.DB.Preload("Destination").Where("user_id = ? AND status = ?", user.ID, "paid").Find(&tickets)
+
+	// 3. AMBIL DESTINASI (DISINI PERBAIKANNYA)
+	var destinations []models.Destination
+	
+	// TAMBAHKAN .Preload("Galleries") AGAR FOTO IKUT DIAMBIL
+	config.DB.Preload("Category").Preload("Galleries").Find(&destinations) 
 
 	c.HTML(http.StatusOK, "user_dashboard.html", gin.H{
-		"user":     user,
-		"wishlist": wishlist,
+		"user":         user,
+		"tickets":      tickets,
+		"destinations": destinations,
 	})
 }

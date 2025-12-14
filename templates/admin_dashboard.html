@@ -3,15 +3,27 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" type="text/css">
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
 <style>
     .datatable-input { border-radius: 0.5rem; border: 1px solid #e2e8f0; padding: 0.5rem; outline: none; }
     .datatable-selector { border-radius: 0.5rem; border: 1px solid #e2e8f0; padding: 0.3rem; margin-left: 0.5rem; }
     .datatable-pagination li a { border-radius: 0.5rem; margin: 0 2px; text-decoration: none; }
     .datatable-pagination li.active a { background-color: #4f46e5; color: white; }
+    
+    /* Style Tab Custom */
+    .tab-active { color: white; border-color: transparent; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+    .tab-inactive { background-color: white; color: #64748b; border-color: transparent; }
+    .tab-inactive:hover { background-color: #f8fafc; }
+
+    /* Fix Search Icon Map */
+    .leaflet-control-geocoder-icon { width: 30px !important; height: 30px !important; background-color: white; border-radius: 4px; }
 </style>
 
-<div class="flex min-h-screen relative overflow-hidden">
+<div class="flex min-h-screen relative overflow-hidden bg-slate-50">
     
     <div class="absolute -top-20 -left-20 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
     <div class="absolute top-40 -right-20 w-96 h-96 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
@@ -28,11 +40,9 @@
             <a href="/admin/dashboard" class="flex items-center gap-4 px-4 py-3 bg-white/10 rounded-xl text-white font-medium backdrop-blur-sm border border-white/10 transition-all hover:scale-105">
                 <i class="fas fa-chart-pie text-indigo-400"></i> Dashboard
             </a>
-            
             <a href="/admin/scanner" class="flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
                 <i class="fas fa-qrcode text-cyan-400"></i> Scan Tiket
             </a>
-
             <a href="/" target="_blank" class="flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
                 <i class="fas fa-external-link-alt"></i> Lihat Website
             </a>
@@ -40,27 +50,16 @@
                 <i class="fas fa-power-off"></i> Logout
             </a>
         </nav>
-
-        <div class="absolute bottom-8 left-0 w-full px-8">
-            <div class="p-4 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 shadow-lg">
-                <p class="text-xs text-indigo-200 mb-1">Status Server</p>
-                <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
-                    <span class="text-sm font-bold">Online & Aman</span>
-                </div>
-            </div>
-        </div>
     </aside>
 
     <main class="flex-1 lg:ml-72 p-8 relative z-10">
-        
         <header class="flex justify-between items-center mb-10 animate-up">
             <div>
                 <h2 class="text-3xl font-bold text-slate-800">Dashboard Overview 👋</h2>
                 <p class="text-slate-500 mt-1">Pantau performa bisnis dan data pariwisata.</p>
             </div>
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center text-slate-600 cursor-pointer hover:bg-slate-50 transition">
+                <div class="w-12 h-12 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center text-slate-600">
                     <i class="fas fa-bell"></i>
                 </div>
                 <img src="https://ui-avatars.com/api/?name=Admin&background=0f172a&color=fff" class="w-12 h-12 rounded-full shadow-md border-2 border-white">
@@ -69,55 +68,20 @@
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="p-6 rounded-3xl bg-white border border-slate-100 shadow-sm animate-up delay-100 flex items-center gap-4 hover:shadow-md transition">
-                <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl">
-                    <i class="fas fa-map-location-dot"></i>
-                </div>
-                <div>
-                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Destinasi</p>
-                    <h3 class="text-2xl font-bold text-slate-800">{{ len .destinations }}</h3>
-                </div>
+                <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl"><i class="fas fa-map-location-dot"></i></div>
+                <div><p class="text-slate-400 text-xs font-bold uppercase">Destinasi</p><h3 class="text-2xl font-bold text-slate-800">{{ len .destinations }}</h3></div>
             </div>
-
             <div class="p-6 rounded-3xl bg-white border border-slate-100 shadow-sm animate-up delay-200 flex items-center gap-4 hover:shadow-md transition">
-                <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div>
-                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Member</p>
-                    <h3 class="text-2xl font-bold text-slate-800">{{ len .members }}</h3>
-                </div>
+                <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl"><i class="fas fa-users"></i></div>
+                <div><p class="text-slate-400 text-xs font-bold uppercase">Member</p><h3 class="text-2xl font-bold text-slate-800">{{ len .members }}</h3></div>
             </div>
-
-            <div class="p-6 rounded-3xl bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-lg shadow-orange-500/30 animate-up delay-300 flex items-center gap-4 transform hover:-translate-y-1 transition duration-300">
-                <div class="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl">
-                    <i class="fas fa-wallet"></i>
-                </div>
-                <div>
-                    <p class="text-orange-50 text-xs font-bold uppercase tracking-wider">Pendapatan</p>
-                    <h3 class="text-2xl font-bold">Rp {{ printf "%.0f" .totalRevenue }}</h3>
-                </div>
+            <div class="p-6 rounded-3xl bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-lg shadow-orange-500/30 animate-up delay-300 flex items-center gap-4 hover:-translate-y-1 transition">
+                <div class="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl"><i class="fas fa-wallet"></i></div>
+                <div><p class="text-orange-50 text-xs font-bold uppercase">Pendapatan</p><h3 class="text-2xl font-bold">Rp {{ printf "%.0f" .totalRevenue }}</h3></div>
             </div>
-
             <div class="p-6 rounded-3xl bg-white border border-slate-100 shadow-sm animate-up delay-300 flex items-center gap-4 hover:shadow-md transition">
-                <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl">
-                    <i class="fas fa-tags"></i>
-                </div>
-                <div>
-                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Kategori</p>
-                    <h3 class="text-2xl font-bold text-slate-800">{{ len .categories }}</h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 mb-8 animate-up delay-300 relative overflow-hidden">
-            <div class="flex justify-between items-center mb-6">
-                <div>
-                    <h3 class="text-xl font-bold text-slate-800">Statistik Pengunjung</h3>
-                    <p class="text-sm text-slate-500">Trend kunjungan member tahun 2025</p>
-                </div>
-            </div>
-            <div class="relative h-80 w-full">
-                <canvas id="visitorChart"></canvas>
+                <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl"><i class="fas fa-tags"></i></div>
+                <div><p class="text-slate-400 text-xs font-bold uppercase">Kategori</p><h3 class="text-2xl font-bold text-slate-800">{{ len .categories }}</h3></div>
             </div>
         </div>
 
@@ -125,69 +89,84 @@
             
             <div class="xl:col-span-1">
                 <div class="glass-panel p-6 rounded-3xl shadow-sm border border-slate-100 h-full bg-white">
-                    <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2 border-b pb-4">
-                        <span class="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600"><i class="fas fa-plus"></i></span>
-                        Tambah Wisata
-                    </h3>
                     
-                    <form method="POST" action="/admin/destination" enctype="multipart/form-data" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nama Wisata</label>
-                            <input type="text" name="name" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50" placeholder="Contoh: Pantai Kuta" required>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Kategori</label>
-                            <select name="category_id" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-indigo-500 transition-all">
-                                {{ range .categories }}
-                                    <option value="{{ .ID }}">{{ .Name }}</option>
-                                {{ end }}
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nama Lokasi (Kota)</label>
-                            <input type="text" name="location" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50" placeholder="Contoh: Badung, Bali">
-                        </div>
-
-                        <div class="col-span-2">
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Titik Lokasi Peta (Klik Peta)</label>
-                            <div id="mapPicker" class="w-full h-64 rounded-xl border-2 border-slate-100 z-0"></div>
-                            <p class="text-xs text-slate-400 mt-1">*Klik peta untuk isi koordinat otomatis.</p>
-                            
-                            <div class="grid grid-cols-2 gap-4 mt-2">
-                                <input type="text" id="latInput" name="latitude" class="bg-slate-100 text-xs p-2 rounded text-slate-500" placeholder="Latitude" readonly>
-                                <input type="text" id="lngInput" name="longitude" class="bg-slate-100 text-xs p-2 rounded text-slate-500" placeholder="Longitude" readonly>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Harga Tiket</label>
-                            <input type="number" name="price" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-indigo-500 bg-slate-50" placeholder="0">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Deskripsi</label>
-                            <textarea name="description" rows="3" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-indigo-500 bg-slate-50"></textarea>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Foto Galeri (Bisa Pilih Banyak)</label>
-    
-                            <div class="relative border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:bg-slate-50 transition cursor-pointer group">
-                                <input type="file" name="images" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Pilih foto" required>
-        
-                                <div class="space-y-2">             
-                                    <i class="fas fa-cloud-upload-alt text-3xl text-slate-400 group-hover:text-indigo-500 transition"></i>
-                                    <p class="text-sm text-slate-500 font-medium">Klik untuk upload (Maks 5 Foto)</p>
-                                    <p class="text-xs text-slate-400">JPG, PNG support</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="w-full py-4 bg-slate-900 text-white rounded-xl font-bold shadow-lg shadow-slate-900/20 hover:bg-indigo-600 hover:shadow-indigo-600/30 transition-all transform hover:-translate-y-1">
-                            Simpan Data
+                    <div class="flex gap-2 mb-6 p-1 bg-slate-100 rounded-xl">
+                        <button onclick="switchTab('wisata')" id="btnWisata" class="flex-1 py-2 px-2 rounded-lg text-xs font-bold transition-all tab-active bg-indigo-600 flex items-center justify-center gap-2">
+                            <i class="fas fa-mountain"></i> Wisata
                         </button>
+                        <button onclick="switchTab('kuliner')" id="btnKuliner" class="flex-1 py-2 px-2 rounded-lg text-xs font-bold transition-all tab-inactive flex items-center justify-center gap-2">
+                            <i class="fas fa-utensils"></i> Kuliner
+                        </button>
+                        <button onclick="switchTab('budaya')" id="btnBudaya" class="flex-1 py-2 px-2 rounded-lg text-xs font-bold transition-all tab-inactive flex items-center justify-center gap-2">
+                            <i class="fas fa-theater-masks"></i> Budaya
+                        </button>
+                    </div>
+
+                    <form id="formWisata" method="POST" action="/admin/destination" enctype="multipart/form-data" class="space-y-4">
+                        <h3 class="text-md font-bold text-slate-800 border-b pb-2 mb-4">Tambah Wisata Alam</h3>
+                        <div class="hidden"><select name="category_id">{{ range .categories }}{{ if ne .Name "Kuliner" }}{{ if ne .Name "Budaya" }}<option value="{{ .ID }}" selected>{{ .Name }}</option>{{ end }}{{ end }}{{ end }}</select></div>
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nama Wisata</label><input type="text" name="name" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-indigo-500 transition-all" placeholder="Contoh: Pantai Kuta" required></div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Lokasi</label><input type="text" name="location" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent" placeholder="Kota" required></div>
+                            <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Harga</label><input type="number" name="price" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent" placeholder="Rp" required></div>
+                        </div>
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Peta Lokasi</label><div id="mapPickerWisata" class="w-full h-40 rounded-xl border-2 border-slate-100 z-0 relative"></div><input type="hidden" id="latInputWisata" name="latitude"><input type="hidden" id="lngInputWisata" name="longitude"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Deskripsi</label><textarea name="description" rows="3" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent"></textarea></div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Foto (Multiple)</label>
+                            <div class="relative border-2 border-dashed border-slate-300 rounded-xl p-4 text-center hover:bg-slate-50 transition cursor-pointer group">
+                                <input type="file" name="images" id="inputFotoWisata" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required>
+                                <div class="space-y-1"><i class="fas fa-cloud-upload-alt text-2xl text-slate-400 group-hover:text-indigo-500"></i><p class="text-xs text-slate-400">Klik / Drag foto</p></div>
+                            </div>
+                            <div id="previewWisata" class="grid grid-cols-4 gap-2 mt-3"></div>
+                        </div>
+                        <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/30">Simpan Wisata</button>
+                    </form>
+
+                    <form id="formKuliner" method="POST" action="/admin/destination" enctype="multipart/form-data" class="space-y-4 hidden">
+                        <h3 class="text-md font-bold text-slate-800 border-b pb-2 mb-4">Tambah Kuliner Baru</h3>
+                        <div class="hidden"><select name="category_id">{{ range .categories }}{{ if eq .Name "Kuliner" }}<option value="{{ .ID }}" selected>Kuliner</option>{{ end }}{{ end }}</select></div>
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nama Tempat</label><input type="text" name="name" class="w-full px-4 py-3 rounded-xl bg-orange-50 border-transparent focus:bg-white focus:ring-2 focus:ring-orange-500 transition-all" required></div>
+                        <div class="grid grid-cols-2 gap-4 p-3 bg-orange-50 rounded-xl border border-orange-100">
+                            <div><label class="block text-xs font-bold text-orange-600 uppercase mb-1">Jam Buka</label><input type="text" name="opening_hours" class="w-full px-3 py-2 rounded-lg border-transparent text-sm" placeholder="08:00 - 22:00"></div>
+                            <div><label class="block text-xs font-bold text-orange-600 uppercase mb-1">Harga Rata2</label><input type="number" name="price" class="w-full px-3 py-2 rounded-lg border-transparent text-sm" placeholder="Rp"></div>
+                        </div>
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Menu Andalan</label><input type="text" name="highlight_menu" class="w-full px-4 py-3 rounded-xl bg-orange-50 border-transparent" required></div>
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Lokasi</label><input type="text" name="location" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent" required></div>
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Peta Lokasi</label><div id="mapPickerKuliner" class="w-full h-40 rounded-xl border-2 border-slate-100 z-0 relative"></div><input type="hidden" id="latInputKuliner" name="latitude"><input type="hidden" id="lngInputKuliner" name="longitude"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Deskripsi</label><textarea name="description" rows="2" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent"></textarea></div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Foto Makanan</label>
+                            <div class="relative border-2 border-dashed border-orange-300 rounded-xl p-4 text-center hover:bg-orange-50 cursor-pointer"><input type="file" name="images" id="inputFotoKuliner" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required><p class="text-xs text-slate-400">Upload Foto</p></div>
+                            <div id="previewKuliner" class="grid grid-cols-4 gap-2 mt-3"></div>
+                        </div>
+                        <button type="submit" class="w-full py-4 bg-orange-500 text-white rounded-xl font-bold hover:bg-orange-600 transition shadow-lg shadow-orange-500/30">Simpan Kuliner</button>
+                    </form>
+
+                    <form id="formBudaya" method="POST" action="/admin/destination" enctype="multipart/form-data" class="space-y-4 hidden">
+                        <h3 class="text-md font-bold text-slate-800 border-b pb-2 mb-4">Tambah Kearifan Budaya</h3>
+                        <div class="hidden"><select name="category_id">{{ range .categories }}{{ if eq .Name "Budaya" }}<option value="{{ .ID }}" selected>Budaya</option>{{ end }}{{ end }}</select></div>
+                        
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nama Budaya</label><input type="text" name="name" class="w-full px-4 py-3 rounded-xl bg-rose-50 border-transparent focus:bg-white focus:ring-2 focus:ring-rose-500 transition-all" placeholder="Contoh: Tari Kecak" required></div>
+                        
+                        <div class="grid grid-cols-2 gap-4 p-3 bg-rose-50 rounded-xl border border-rose-100">
+                            <div><label class="block text-xs font-bold text-rose-600 uppercase mb-1">Waktu</label><input type="text" name="opening_hours" class="w-full px-3 py-2 rounded-lg border-transparent text-sm" placeholder="Bulan Suro / Hari Raya" required></div>
+                            <div><label class="block text-xs font-bold text-rose-600 uppercase mb-1">Biaya Tiket</label><input type="number" name="price" class="w-full px-3 py-2 rounded-lg border-transparent text-sm" placeholder="Rp (0 jika gratis)" required></div>
+                        </div>
+                        
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Jenis Budaya</label><input type="text" name="highlight_menu" class="w-full px-4 py-3 rounded-xl bg-rose-50 border-transparent" placeholder="Seni Tari, Ritual, Musik" required></div>
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Asal Daerah</label><input type="text" name="location" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent" placeholder="Contoh: Ubud, Bali" required></div>
+                        
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Peta Lokasi</label><div id="mapPickerBudaya" class="w-full h-40 rounded-xl border-2 border-slate-100 z-0 relative"></div><input type="hidden" id="latInputBudaya" name="latitude"><input type="hidden" id="lngInputBudaya" name="longitude"></div>
+                        
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Filosofi / Sejarah</label><textarea name="description" rows="3" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent" placeholder="Jelaskan makna budaya..."></textarea></div>
+                        
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Foto Dokumentasi</label>
+                            <div class="relative border-2 border-dashed border-rose-300 rounded-xl p-4 text-center hover:bg-rose-50 cursor-pointer"><input type="file" name="images" id="inputFotoBudaya" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required><p class="text-xs text-slate-400">Upload Foto</p></div>
+                            <div id="previewBudaya" class="grid grid-cols-4 gap-2 mt-3"></div>
+                        </div>
+                        <button type="submit" class="w-full py-4 bg-rose-500 text-white rounded-xl font-bold hover:bg-rose-600 transition shadow-lg shadow-rose-500/30">Simpan Budaya</button>
                     </form>
                 </div>
             </div>
@@ -195,29 +174,22 @@
             <div class="xl:col-span-2 space-y-8">
                 
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                    <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+                    <div class="flex justify-between items-center mb-6">
                         <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                             <span class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600"><i class="fas fa-list"></i></span>
-                            Data Wisata
+                            Data Wisata, Kuliner & Budaya
                         </h3>
-                        
-                        <select id="categoryFilter" class="mt-2 md:mt-0 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer">
-                            <option value="">Semua Kategori</option>
-                            <option value="Pantai">Pantai</option>
-                            <option value="Gunung">Gunung</option>
-                            <option value="Kuliner">Kuliner</option>
+                        <select id="categoryFilter" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <option value="">Semua Data</option>
+                            <option value="Kuliner">Kuliner Saja</option>
+                            <option value="Budaya">Budaya</option>
+                            <option value="Pantai">Wisata Alam</option>
                         </select>
                     </div>
-
                     <div class="overflow-hidden">
                         <table id="destTable" class="w-full text-left border-collapse">
                             <thead class="bg-slate-50 text-xs font-bold text-slate-400 uppercase">
-                                <tr>
-                                    <th>Info Wisata</th>
-                                    <th>Kategori</th>
-                                    <th>Harga</th>
-                                    <th class="text-center">Aksi</th>
-                                </tr>
+                                <tr><th>Nama & Lokasi</th><th>Kategori</th><th>Info Detail</th><th class="text-center">Aksi</th></tr>
                             </thead>
                             <tbody class="text-sm">
                                 {{ range .destinations }}
@@ -227,13 +199,20 @@
                                         <div class="text-xs text-slate-500"><i class="fas fa-map-marker-alt mr-1"></i> {{ .Location }}</div>
                                     </td>
                                     <td class="p-4">
-                                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-600">{{ .Category.Name }}</span>
+                                        {{ if eq .Category.Name "Kuliner" }}<span class="px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-600">Kuliner</span>
+                                        {{ else if eq .Category.Name "Budaya" }}<span class="px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-600">Budaya</span>
+                                        {{ else }}<span class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-600">{{ .Category.Name }}</span>{{ end }}
                                     </td>
-                                    <td class="p-4 font-mono font-medium text-slate-600">Rp {{ .Price }}</td>
+                                    <td class="p-4 text-xs">
+                                        {{ if or (eq .Category.Name "Kuliner") (eq .Category.Name "Budaya") }}
+                                            <div class="{{ if eq .Category.Name "Budaya" }}text-rose-600{{ else }}text-orange-600{{ end }} font-semibold"><i class="fas fa-clock"></i> {{ .OpeningHours }}</div>
+                                            <div class="text-slate-500 truncate w-32" title="{{ .HighlightMenu }}">{{ .HighlightMenu }}</div>
+                                        {{ else }}<div class="text-slate-600 font-mono">Rp {{ .Price }}</div>{{ end }}
+                                    </td>
                                     <td class="p-4 text-center">
                                         <div class="flex items-center justify-center gap-2">
-                                            <button class="text-slate-300 hover:text-indigo-500 transition"><i class="fas fa-edit"></i></button>
-                                            <button class="text-slate-300 hover:text-red-500 transition"><i class="fas fa-trash-alt"></i></button>
+                                            <a href="/admin/destination/edit/{{ .ID }}" class="w-8 h-8 flex items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition"><i class="fas fa-edit"></i></a>
+                                            <a href="javascript:void(0)" onclick="confirmDelete('{{ .ID }}', '{{ .Name }}')" class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash-alt"></i></a>
                                         </div>
                                     </td>
                                 </tr>
@@ -242,71 +221,18 @@
                         </table>
                     </div>
                 </div>
-
+                
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
                     <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
                         <span class="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600"><i class="fas fa-history"></i></span>
                         Riwayat Transaksi & Scan
                     </h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-50 text-xs font-bold text-slate-400 uppercase">
-                                <tr>
-                                    <th class="p-4">Kode Tiket</th>
-                                    <th class="p-4">Pengunjung</th>
-                                    <th class="p-4">Status</th>
-                                    <th class="p-4">Waktu</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-sm">
-                                {{ range .transactions }}
-                                <tr class="hover:bg-slate-50 transition border-b border-slate-50">
-                                    <td class="p-4 font-mono font-bold text-slate-600">{{ .BookingCode }}</td>
-                                    <td class="p-4">{{ .User.FullName }}</td>
-                                    <td class="p-4">
-                                        {{ if eq .Status "used" }}
-                                            <span class="px-2 py-1 bg-slate-200 text-slate-600 text-xs font-bold rounded-full">SUDAH MASUK</span>
-                                        {{ else }}
-                                            <span class="px-2 py-1 bg-green-100 text-green-600 text-xs font-bold rounded-full">LUNAS</span>
-                                        {{ end }}
-                                    </td>
-                                    <td class="p-4 text-slate-400 text-xs">{{ .UpdatedAt.Format "02 Jan 15:04" }}</td>
-                                </tr>
-                                {{ else }}
-                                <tr><td colspan="4" class="p-6 text-center text-slate-400">Belum ada transaksi.</td></tr>
-                                {{ end }}
-                            </tbody>
-                        </table>
-                    </div>
+                    <div class="overflow-x-auto"><table class="w-full text-left"><thead class="bg-slate-50 text-xs font-bold text-slate-400 uppercase"><tr><th class="p-4">Kode Tiket</th><th class="p-4">Pengunjung</th><th class="p-4">Wisata</th><th class="p-4">Status</th><th class="p-4">Waktu</th></tr></thead><tbody class="text-sm">{{ range .transactions }}<tr class="hover:bg-slate-50 transition border-b border-slate-50"><td class="p-4 font-mono font-bold text-slate-600">{{ .BookingCode }}</td><td class="p-4">{{ .User.FullName }}</td><td class="p-4">{{ .Destination.Name }}</td><td class="p-4">{{ if eq .Status "used" }}<span class="px-3 py-1 bg-slate-200 text-slate-600 text-xs font-bold rounded-full">SUDAH MASUK</span>{{ else }}<span class="px-3 py-1 bg-green-100 text-green-600 text-xs font-bold rounded-full">LUNAS</span>{{ end }}</td><td class="p-4 text-slate-400 text-xs">{{ .UpdatedAt.Format "02 Jan 15:04" }}</td></tr>{{ else }}<tr><td colspan="5" class="p-6 text-center text-slate-400">Belum ada transaksi.</td></tr>{{ end }}</tbody></table></div>
                 </div>
 
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                    <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-                        <span class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600"><i class="fas fa-users"></i></span>
-                        Member Terdaftar
-                    </h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-50 text-xs font-bold text-slate-400 uppercase">
-                                <tr>
-                                    <th class="p-4">Nama</th>
-                                    <th class="p-4">Username</th>
-                                    <th class="p-4">Bergabung</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-sm">
-                                {{ range .members }}
-                                <tr class="hover:bg-slate-50 transition border-b border-slate-50">
-                                    <td class="p-4 font-bold text-slate-800">{{ .FullName }}</td>
-                                    <td class="p-4 text-blue-500">@{{ .Username }}</td>
-                                    <td class="p-4 text-slate-500">{{ .CreatedAt.Format "02 Jan 2006" }}</td>
-                                </tr>
-                                {{ else }}
-                                <tr><td colspan="3" class="p-6 text-center text-slate-400">Belum ada member.</td></tr>
-                                {{ end }}
-                            </tbody>
-                        </table>
-                    </div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2"><span class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600"><i class="fas fa-users"></i></span> Member Terdaftar</h3>
+                    <div class="overflow-x-auto"><table class="w-full text-left"><thead class="bg-slate-50 text-xs font-bold text-slate-400 uppercase"><tr><th class="p-4">Nama</th><th class="p-4">Username</th><th class="p-4">Bergabung</th></tr></thead><tbody class="text-sm">{{ range .members }}<tr class="hover:bg-slate-50 transition border-b border-slate-50"><td class="p-4 font-bold text-slate-800">{{ .FullName }}</td><td class="p-4 text-blue-500">@{{ .Username }}</td><td class="p-4 text-slate-500">{{ .CreatedAt.Format "02 Jan 2006" }}</td></tr>{{ else }}<tr><td colspan="3" class="p-6 text-center text-slate-400">Belum ada member.</td></tr>{{ end }}</tbody></table></div>
                 </div>
 
             </div>
@@ -315,87 +241,112 @@
 </div>
 
 <script>
+    // 1. NOTIFIKASI
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status');
+    if (status) {
+        let title='', text='';
+        if (status==='success') { title='Berhasil Disimpan!'; text='Data baru berhasil ditambahkan.'; }
+        else if (status==='updated') { title='Berhasil Diupdate!'; text='Data berhasil diperbarui.'; }
+        else if (status==='deleted') { title='Berhasil Dihapus!'; text='Data berhasil dihapus.'; }
+        if(title) { Swal.fire({ title:title, text:text, icon:'success', confirmButtonColor:'#4f46e5', timer:3000 }); window.history.replaceState(null, null, window.location.pathname); }
+    }
+
+    // 2. SWITCH TAB LOGIC (3 TAB: WISATA, KULINER, BUDAYA)
+    function switchTab(tab) {
+        // Reset Buttons (Set Default Inactive)
+        const btnClasses = "flex-1 py-2 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 tab-inactive";
+        document.getElementById('btnWisata').className = btnClasses;
+        document.getElementById('btnKuliner').className = btnClasses;
+        document.getElementById('btnBudaya').className = btnClasses;
+
+        // Hide All Forms
+        document.getElementById('formWisata').classList.add('hidden');
+        document.getElementById('formKuliner').classList.add('hidden');
+        document.getElementById('formBudaya').classList.add('hidden');
+
+        // Activate Selected
+        if(tab === 'wisata') {
+            document.getElementById('formWisata').classList.remove('hidden');
+            document.getElementById('btnWisata').className = "flex-1 py-2 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 tab-active bg-indigo-600 text-white";
+            setTimeout(() => { mapWisata.invalidateSize(); }, 200);
+        } else if(tab === 'kuliner') {
+            document.getElementById('formKuliner').classList.remove('hidden');
+            document.getElementById('btnKuliner').className = "flex-1 py-2 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 tab-active bg-orange-500 text-white";
+            setTimeout(() => { mapKuliner.invalidateSize(); }, 200);
+        } else if(tab === 'budaya') {
+            document.getElementById('formBudaya').classList.remove('hidden');
+            document.getElementById('btnBudaya').className = "flex-1 py-2 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 tab-active bg-rose-500 text-white";
+            setTimeout(() => { mapBudaya.invalidateSize(); }, 200);
+        }
+    }
+
+    // 3. IMAGE PREVIEW
+    function setupImagePreview(inputId, previewId) {
+        const input = document.getElementById(inputId);
+        const previewDiv = document.getElementById(previewId);
+        if(!input) return;
+        input.addEventListener('change', function(e) {
+            previewDiv.innerHTML = '';
+            if (this.files) {
+                Array.from(this.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = "w-full h-16 object-cover rounded-lg border border-slate-200 shadow-sm";
+                        previewDiv.appendChild(img);
+                    }
+                    reader.readAsDataURL(file);
+                });
+            }
+        });
+    }
+    setupImagePreview('inputFotoWisata', 'previewWisata');
+    setupImagePreview('inputFotoKuliner', 'previewKuliner');
+    setupImagePreview('inputFotoBudaya', 'previewBudaya');
+
+    // 4. MAPS
+    var mapWisata, mapKuliner, mapBudaya;
     document.addEventListener("DOMContentLoaded", function() {
         
-        // 1. CONFIG CHART PENGUNJUNG
-        const ctx = document.getElementById('visitorChart').getContext('2d');
-        const visitorData = {{ .visitorStats }}; 
-        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
-        gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+        function initMap(mapId, latId, lngId) {
+            var map = L.map(mapId).setView([-2.5489, 118.0149], 5);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            var marker;
+            
+            L.Control.geocoder({ defaultMarkGeocode: false, placeholder: "Cari..." })
+            .on('markgeocode', function(e) {
+                var latlng = e.geocode.center;
+                if (marker) marker.setLatLng(latlng); else marker = L.marker(latlng).addTo(map);
+                document.getElementById(latId).value = latlng.lat;
+                document.getElementById(lngId).value = latlng.lng;
+                map.setView(latlng, 16);
+            }).addTo(map);
 
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-                datasets: [{
-                    label: 'Pengunjung',
-                    data: visitorData,
-                    borderColor: '#4f46e5',
-                    backgroundColor: gradient,
-                    borderWidth: 3,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#4f46e5',
-                    pointRadius: 5,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
-                    x: { grid: { display: false } }
-                }
-            }
-        });
-
-        // 2. CONFIG MAP PICKER (LEAFLET)
-        var map = L.map('mapPicker').setView([-2.5489, 118.0149], 5); // Default Indonesia
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
-
-        var marker;
-        map.on('click', function(e) {
-            var lat = e.latlng.lat;
-            var lng = e.latlng.lng;
-
-            if (marker) {
-                marker.setLatLng(e.latlng);
-            } else {
-                marker = L.marker(e.latlng).addTo(map);
-            }
-            document.getElementById('latInput').value = lat;
-            document.getElementById('lngInput').value = lng;
-        });
-
-        // 3. CONFIG TABEL CANGGIH (SIMPLE-DATATABLES)
-        const dataTable = new simpleDatatables.DataTable("#destTable", {
-            searchable: true,
-            fixedHeight: false,
-            perPage: 5,
-            perPageSelect: [5, 10, 20],
-            labels: {
-                placeholder: "Cari wisata...",
-                perPage: "Data per halaman",
-                noRows: "Tidak ada data ditemukan",
-                info: "Menampilkan {start} - {end} dari {rows}",
-            }
-        });
-
-        // Logic Filter Kategori Dropdown
-        const categoryFilter = document.getElementById('categoryFilter');
-        if(categoryFilter) {
-            categoryFilter.addEventListener('change', function(e) {
-                const value = e.target.value;
-                dataTable.search(value);
+            map.on('click', function(e) {
+                if (marker) marker.setLatLng(e.latlng); else marker = L.marker(e.latlng).addTo(map);
+                document.getElementById(latId).value = e.latlng.lat;
+                document.getElementById(lngId).value = e.latlng.lng;
             });
+            return map;
         }
 
+        mapWisata = initMap('mapPickerWisata', 'latInputWisata', 'lngInputWisata');
+        mapKuliner = initMap('mapPickerKuliner', 'latInputKuliner', 'lngInputKuliner');
+        mapBudaya = initMap('mapPickerBudaya', 'latInputBudaya', 'lngInputBudaya');
+
+        // Datatable
+        const dataTable = new simpleDatatables.DataTable("#destTable", { searchable: true, perPage: 5 });
+        const catFilter = document.getElementById('categoryFilter');
+        if(catFilter) catFilter.addEventListener('change', (e) => dataTable.search(e.target.value));
     });
+
+    // 5. DELETE
+    function confirmDelete(id, name) {
+        Swal.fire({ title:'Hapus Data?', text:"Yakin ingin menghapus "+name+"?", icon:'warning', showCancelButton:true, confirmButtonColor:'#ef4444' })
+        .then((r) => { if(r.isConfirmed) window.location.href="/admin/destination/delete/"+id; });
+    }
 </script>
 
 {{ template "footer" . }}

@@ -25,7 +25,6 @@
         <div class="lg:col-span-2">
             
             <div class="relative group rounded-2xl overflow-hidden shadow-lg mb-4 h-[450px] bg-slate-100 border border-slate-200">
-                
                 <div id="slider" class="flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar">
                     {{ if .destination.Galleries }}
                         {{ range .destination.Galleries }}
@@ -117,7 +116,7 @@
         <div class="lg:col-span-1">
             
             <div class="bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sticky top-24 z-10">
-                <div class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-2">Harga Tiket</div>
+                <div class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-2">Harga Tiket / Menu</div>
                 <div class="text-3xl font-bold text-blue-600 mb-6">Rp {{ .destination.Price }}</div>
 
                 <div class="space-y-4 mb-6">
@@ -129,8 +128,21 @@
                         <i class="fas fa-tag w-8 text-center text-green-500"></i>
                         <span>{{ .destination.Category.Name }}</span>
                     </div>
-                </div>
 
+                    {{ if .destination.OpeningHours }}
+                    <div class="flex items-center text-slate-600">
+                        <i class="fas fa-clock w-8 text-center text-orange-500"></i>
+                        <span>{{ .destination.OpeningHours }}</span>
+                    </div>
+                    {{ end }}
+                    
+                    {{ if .destination.HighlightMenu }}
+                    <div class="flex items-start text-slate-600">
+                        <i class="fas fa-utensils w-8 text-center text-blue-500 mt-1"></i>
+                        <span>Menu: {{ .destination.HighlightMenu }}</span>
+                    </div>
+                    {{ end }}
+                </div>
                 <form action="/checkout" method="POST">
                     <input type="hidden" name="destination_id" value="{{ .destination.ID }}">
                     <input type="hidden" name="price" value="{{ .destination.Price }}">
@@ -162,8 +174,7 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        
-        // --- 1. LOGIC MAP (PETA) ---
+        // --- 1. LOGIC MAP ---
         var lat = {{ .destination.Latitude }};
         var lng = {{ .destination.Longitude }};
         var name = "{{ .destination.Name }}";
@@ -180,7 +191,7 @@
         }
     });
 
-    // --- 2. LOGIC SLIDER (CAROUSEL) ---
+    // --- 2. LOGIC SLIDER ---
     const slider = document.getElementById('slider');
 
     function slideLeft() {
@@ -192,7 +203,6 @@
     }
 
     function slideToIndex(index) {
-        // Scroll ke gambar tertentu
         slider.scrollTo({
             left: slider.clientWidth * index,
             behavior: 'smooth'
